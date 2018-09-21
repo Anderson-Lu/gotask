@@ -1,6 +1,6 @@
-Quick Start
+### Quick Start
 
-1. Create a new task manager like this:
+Create a new task manager like this:
 
 ```golang
 var tasks = NewGoTask(500, false)
@@ -8,7 +8,7 @@ var tasks = NewGoTask(500, false)
 
 here,`500` is the largest concurrent number for `taksManager`. if `quickMode` is set to true, specifc task will be executed immediately when `task.AddTask()` method is invoked.
 
-2. Defined a function witch will be excuted concurrently. Note that all parameters is `...interface{}` and use `tasks.GetParamter` to get concrete parameter.
+Defined a function witch will be excuted concurrently. Note that all parameters is `...interface{}` and use `tasks.GetParamter` to get concrete parameter.
 
 ```golang
 var total = 0
@@ -20,7 +20,7 @@ func add(params ...interface{}) {
 }
 ```
 
-3. Regist concret task to manager.
+Regist concret task to manager.
 
 ```golang
 for i := 0; i < 10000; i++ {
@@ -32,7 +32,7 @@ tasks.Start()
 if `tasks.Start()` is invoked, main routine will be blocked and wait to all subTask finish.
 
 
-API Intro
+### API Intro
 
 ```shell
 //Create concurrent task manager instance
@@ -54,7 +54,7 @@ Cost() int
 Done()
 ```
 
-Performance
+### Performance
 
 we assume that we add numbers in concurrent way. Everytime we add 1 and loop 10000 times.
 
