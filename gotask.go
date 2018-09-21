@@ -1,0 +1,117 @@
+package gotask
+
+import (
+	"sync"
+	"time"
+)
+
+/*
+* GoTask is a high-performance concurrent goroutine manager written in golang.
+* For this case, GoTask reduce your cpu rate and memory and make your project more efficency.
+ */
+type GoTask struct {
+	wg        sync.WaitGroup    //wait for all gorotines finished
+	tasks     []GoTaskDetail    //tasks
+	taskChan  chan GoTaskDetail //job scheduler
+	max       int               //max count of gorotine
+	cost      int64             //milliseconds of this job
+	quickMode bool              //if set to quick mode, jobs will be executed when added
+}
+
+/*
+* GoTaskDetail defines methods
+ */
+type GoTaskDetail struct {
+	fn     func(...interface{})
+	params interface{}
+}
+
+/*
+* Generate GoTask manager
+ */
+func NewGoTask(maxConcurentNum int, quickMode bool) *GoTask {
+	ret := &GoTask{
+		wg:        sync.WaitGroup{},
+		tasks:     make([]GoTaskDetail, 0),
+		taskChan:  make(chan GoTaskDetail, maxConcurentNum),
+		max:       maxConcurentNum,
+		quickMode: quickMode,
+	}
+	if quickMode {
+		ret.wg.Add(1)
+	}
+	return ret
+}
+
+/*
+* Record how much time spent for all jobs.
+ */
+func (self *GoTask) Cost() int64 {
+	return self.cost
+}
+
+/*
+* Add tasks
+ */
+func (self *GoTask) Add(task func(...interface{}), params ...interface{}) {
+	self.tasks = append(self.tasks, GoTaskDetail{
+		fn:     task,
+		params: params,
+	})
+}
+
+/*
+* Get paramters from context
+ */
+func (self *GoTask) GetParamter(index int, params interface{}) interface{} {
+	if p, ok := params.([]interface{}); ok {
+		if len(p) > 0 {
+			if t, ok := p[0].([]interface{}); ok {
+				if len(t) > index {
+					return t[index]
+				}
+			}
+		}
+	}
+	return nil
+}
+
+/*
+* Start concurrent tasks
+ */
+func (self *GoTask) Start() {
+	curTaskNum := 0
+	begin := time.Now().UnixNano() / 1000000
+	for _, v := range self.tasks {
+		self.wg.Add(1)
+		curTaskNum++
+		go func(v GoTaskDetail) {
+			defer func() {
+				self.wg.Done()
+				curTaskNum--
+			}()
+			v.fn(v.params)
+		}(v)
+		for {
+			if curTaskNum < self.max {
+				break
+			}
+			time.Sleep(time.Millisecond * 50)
+		}
+	}
+	if self.quickMode {
+		self.wg.Done()
+	}
+	self.wg.Wait()
+	self.cost = time.Now().UnixNano()/1000000 - begin
+}
+
+/*
+* if set quickMode == true, you must invoke Done() to finish manually.
+ */
+func (self *GoTask) Done() {
+	if self.quickMode == false {
+		return
+	}
+	self.wg.Done()
+}
