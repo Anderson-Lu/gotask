@@ -1,6 +1,6 @@
 [English Document](https://github.com/Anderson-Lu/gotask/blob/master/readme.md)
 
-Gotask是一个基于waitegroup实现的并发任务调度工具。用于并发执行计算并将保证结果数据一致性的并发任务解决方案。
+Gotask是一个基于waitgroup实现的并发任务调度工具。用于并发执行计算并将保证结果数据一致性的并发任务解决方案。
 
 ### 依赖
 
