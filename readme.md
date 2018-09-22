@@ -1,4 +1,4 @@
-[Chinese Document](https://github.com/Anderson-Lu/gotask/blob/master/readme.md)
+[Chinese Document](https://github.com/Anderson-Lu/gotask/blob/master/readme_cn.md)
 
 Gotask is a concurrent task scheduling tool based on waitegroup. Concurrent task solution for concurrent execution of computation and consistency of result data
 
