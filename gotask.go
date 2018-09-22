@@ -10,12 +10,13 @@ import (
 * For this case, GoTask reduce your cpu rate and memory and make your project more efficency.
  */
 type GoTask struct {
-	wg        sync.WaitGroup    //wait for all gorotines finished
-	tasks     []GoTaskDetail    //tasks
-	taskChan  chan GoTaskDetail //job scheduler
-	max       int               //max count of gorotine
-	cost      int64             //milliseconds of this job
-	quickMode bool              //if set to quick mode, jobs will be executed when added
+	wg         sync.WaitGroup    //wait for all gorotines finished
+	tasks      []GoTaskDetail    //tasks
+	taskChan   chan GoTaskDetail //job scheduler
+	max        int               //max count of gorotine
+	cost       int64             //milliseconds of this job
+	quickMode  bool              //if set to quick mode, jobs will be executed when added
+	curTaskNum int
 }
 
 /*
@@ -31,11 +32,12 @@ type GoTaskDetail struct {
  */
 func NewGoTask(maxConcurentNum int, quickMode bool) *GoTask {
 	ret := &GoTask{
-		wg:        sync.WaitGroup{},
-		tasks:     make([]GoTaskDetail, 0),
-		taskChan:  make(chan GoTaskDetail, maxConcurentNum),
-		max:       maxConcurentNum,
-		quickMode: quickMode,
+		wg:         sync.WaitGroup{},
+		tasks:      make([]GoTaskDetail, 0),
+		taskChan:   make(chan GoTaskDetail, maxConcurentNum),
+		max:        maxConcurentNum,
+		quickMode:  quickMode,
+		curTaskNum: 0,
 	}
 	if quickMode {
 		ret.wg.Add(1)
@@ -54,10 +56,24 @@ func (self *GoTask) Cost() int64 {
 * Add tasks
  */
 func (self *GoTask) Add(task func(...interface{}), params ...interface{}) {
-	self.tasks = append(self.tasks, GoTaskDetail{
-		fn:     task,
-		params: params,
-	})
+	if !self.quickMode {
+		self.tasks = append(self.tasks, GoTaskDetail{
+			fn:     task,
+			params: params,
+		})
+	} else {
+		go func(v GoTaskDetail) {
+			self.curTaskNum++
+			defer func() {
+				self.wg.Done()
+				self.curTaskNum--
+			}()
+			v.fn(v.params)
+		}(GoTaskDetail{
+			fn:     task,
+			params: params,
+		})
+	}
 }
 
 /*
