@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var tasks = NewGoTask(500, false)
+var tasks = NewGoTask(10000, false)
 var lock sync.Mutex
 var total = 0
 

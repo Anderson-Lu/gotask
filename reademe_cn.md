@@ -1,24 +1,24 @@
-[Chinese Document](https://github.com/Anderson-Lu/gotask/blob/master/readme.md)
+[English Document](https://github.com/Anderson-Lu/gotask/blob/master/readme.md)
 
-Gotask is a concurrent task scheduling tool based on waitegroup. Concurrent task solution for concurrent execution of computation and consistency of result data
+Gotask是一个基于waitegroup实现的并发任务调度工具。用于并发执行计算并将保证结果数据一致性的并发任务解决方案。
 
-### Dependency
+### 依赖
 
 ```shell
 go get github.com/Anderson-Lu/gotask
 ```
 
-### Quick Start
+### 快速开始
 
-Create a new task manager like this:
+创建一个并发任务管理实例:
 
 ```golang
 var tasks = NewGoTask(500, false)
 ```
 
-here,`500` is the largest concurrent number for `taksManager`. if `quickMode` is set to true, specifc task will be executed immediately when `task.AddTask()` method is invoked.
+这里，`500`是最大的并发数。如果将第二个参数设置为`true`，则在调用`Adtask`方法时，将立即执行指定任务。
 
-Defined a function witch will be excuted concurrently. Note that all parameters is `...interface{}` and use `tasks.GetParamter` to get concrete parameter.
+接下来定义一个同时被运行的函数。注意，所有参数都是`…interface{}`，并使用`GetParameter()`来获取具体参数。
 
 ```golang
 var total = 0
@@ -30,7 +30,7 @@ func add(params ...interface{}) {
 }
 ```
 
-Regist concret task to manager.
+向并发任务管理器注册任务:
 
 ```golang
 for i := 0; i < 10000; i++ {
@@ -39,11 +39,12 @@ for i := 0; i < 10000; i++ {
 tasks.Start() 
 ```
 
-if `tasks.Start()` is invoked, main routine will be blocked and wait to all subTask finish.
+如果调用`Stant()`，主例程将被阻塞并等待所有子任务完成。
 
-### Sample Demo
 
-Cyclic 10000 cumulative calculation
+### 简单示例
+
+循环10000次累加计算
 
 ```golang
 var tasks = NewGoTask(10000, false)
@@ -67,7 +68,7 @@ func Demo() {
 ```
 
 
-### API Intro
+### API介绍
 
 ```shell
 //Create concurrent task manager instance
@@ -89,9 +90,9 @@ Cost() int
 Done()
 ```
 
-### Performance
+### 性能
 
-we assume that we add numbers in concurrent way. Everytime we add 1 and loop 10000 times.
+以下是并发累加10000次的运行比较:
 
 ```shell
 conccurent_num    loop_time     cost/op            bytes/op       allocs/op         total_time  avg_time
