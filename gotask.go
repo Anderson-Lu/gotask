@@ -63,6 +63,12 @@ func (self *GoTask) Add(task func(...interface{}), params ...interface{}) {
 		})
 	} else {
 		go func(v GoTaskDetail) {
+			for {
+				if self.curTaskNum < self.max {
+					break
+				}
+				time.Sleep(time.Millisecond * 50)
+			}
 			self.curTaskNum++
 			defer func() {
 				self.wg.Done()
