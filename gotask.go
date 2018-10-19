@@ -39,9 +39,6 @@ func NewGoTask(maxConcurentNum int, quickMode bool) *GoTask {
 		quickMode:  quickMode,
 		curTaskNum: 0,
 	}
-	if quickMode {
-		ret.wg.Add(1)
-	}
 	return ret
 }
 
@@ -67,8 +64,9 @@ func (self *GoTask) Add(task func(...interface{}), params ...interface{}) {
 				if self.curTaskNum < self.max {
 					break
 				}
-				time.Sleep(time.Millisecond * 50)
+				// time.Sleep(time.Millisecond * 50)
 			}
+			self.wg.Add(1)
 			self.curTaskNum++
 			defer func() {
 				self.wg.Done()
@@ -102,6 +100,10 @@ func (self *GoTask) GetParamter(index int, params interface{}) interface{} {
 * Start concurrent tasks
  */
 func (self *GoTask) Start() {
+	if self.quickMode {
+		self.wg.Wait()
+		return
+	}
 	curTaskNum := 0
 	begin := time.Now().UnixNano() / 1000000
 	for _, v := range self.tasks {
@@ -121,19 +123,17 @@ func (self *GoTask) Start() {
 			time.Sleep(time.Millisecond * 50)
 		}
 	}
-	if self.quickMode {
-		self.wg.Done()
-	}
 	self.wg.Wait()
 	self.cost = time.Now().UnixNano()/1000000 - begin
 }
 
 /*
-* if set quickMode == true, you must invoke Done() to finish manually.
+* if set quickMode == true, you must invoke Done() to finish manually. Deprecated
  */
 func (self *GoTask) Done() {
-	if self.quickMode == false {
-		return
-	}
-	self.wg.Done()
+	// if self.quickMode == false {
+	// 	return
+	// }
+	// self.wg.Done()
+	return
 }

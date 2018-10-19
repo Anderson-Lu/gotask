@@ -23,5 +23,40 @@ func BenchmarkConcureentTask(t *testing.B) {
 		tasks.Add(add, 1)
 	}
 	t.StartTimer()
-	tasks.Start()
+	tasks.Start() 
+}
+
+func BenchmarkTypeAssert(t *testing.B) {
+	t.StartTimer()
+	var wg sync.WaitGroup
+	var k interface{} = "s"
+	sum := 0
+	for i := 0; i < 10000; i++ {
+		go func(s interface{}) {
+			defer func() {
+				wg.Done()
+			}()
+			wg.Add(1)
+			sum += len(k.(string))
+		}(k)
+	}
+	wg.Wait()
+}
+
+//basic usage via gorutine but specific concreate param type
+func BenchmarkConcurrentTaskRoutine(t *testing.B) {
+	t.StartTimer()
+	sum := 0
+	var wg sync.WaitGroup
+	for i := 0; i < 10000; i++ {
+		go func(i int) {
+			defer func() {
+				wg.Done()
+			}()
+			time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+			sum += 1
+			wg.Add(1)
+		}(i)
+	}
+	wg.Wait()
 }

@@ -102,3 +102,37 @@ conccurent_num    loop_time     cost/op            bytes/op       allocs/op     
 1000              2             791744067 ns/op    1668632 B/op   30433 allocs/op   2.420s      1.21s
 10000             300000        3564 ns/op         37 B/op        0 allocs/op       7.841s      0.0000261s
 ```
+
+#### 有一些原因使得GoStand慢于原来的goroutine：
+
+- 在我的最后一次提交中，我在每个任务之间添加了一个时间分割持续时间（50ms）,最新提交已删除。
+
+```golang
+for {
+	if self.curTaskNum < self.max {
+		break
+	}
+	// time.Sleep(time.Millisecond * 50) //now I delete this row 
+}
+```
+
+- 如果你想使并发任务更快，你可以像这样设置`quickMode=true`：
+
+```golang
+var tasks = NewGoTask(10000, true)
+```
+
+- 对于某些情况，如果您的参数是具体的，我建议您使用特定的`gorutine`而不是使用`gotask`，因为这可以避免多类型转换。但是如果任务不同（如三个任务，taskA、taskB和taskC），那么可以使用`gotask`，因为它使代码更加优雅和易于维护。`gotask_test.go`中的demo是简单示例，所有任务都是相同的，因此如果使用原始Grututin而不是Gotask。
+
+
+那么，是什么造就了Gotask慢起来呢？
+
+- `params`类型转换(`interface{}`到具体的数据类型)
+- 外部管理成本(比如耗时统计)
+-所有任务都是闭包方法
+
+那么，何时使用Gotask？
+
+- 多个任务是不同的,即多个任务处理程序.
+- 协程数量限制，尤其是在一些爬虫环境下，太大的并发数量将使你的机器瘫痪。
+- 你需要统计所有任务的执行情况。
