@@ -116,9 +116,9 @@ for {
 
 - If you want to make your concurrent task faster, you can set `quickMode=true` like this `var tasks = NewGoTask(10000, true)`
 
-- For some cases, if your params is concrete, I recommend that you use specific gorutine instead of use gotask because this can avoid multiple type convertion. But if your tasks is different(like three tasks,taskA,taskB and taskC) so that you can use gotask because it make your code more elegant and easy-maintained. The demos in `gotask_test.go` is sample and all tasks is the same, so that if you use original gorutine instead of `gotask`.
+- For some cases, if your params is concrete, I recommend that you use specific gorutine instead of use gotask because this can avoid multiple type convertion. But if your tasks is different(like three tasks,taskA,taskB and taskC) so that you can use gotask because it make your code more elegant and easy-maintained. The demos in `gotask_test.go` is sample and all tasks is the same, so that you can use original gorutine instead of `gotask`.
 
-So what make Gotask slowwer?
+So what make Gotask slower?
 
 - params type convert
 - external manager cost
