@@ -102,9 +102,9 @@ conccurent_num    loop_time     cost/op            bytes/op       allocs/op     
 10000             300000        3564 ns/op         37 B/op        0 allocs/op       7.841s      0.0000261s
 ```
 
-#### There are some reasons that makes gotask is slowwer then origin goroutine:
+#### There are some reasons that makes gotask is slower then original goroutine:
 
-- In my last commit, I add a time split duration(50ms) between every tasks
+- In my last commit, I add a time split duration(50ms) between each task
 ```golang
 for {
 	if self.curTaskNum < self.max {
@@ -114,7 +114,7 @@ for {
 }
 ```
 
-- If you want to make your concurrent task faster, you can set `quickMode=true` like this `var tasks = NewGoTask(10000, true)`
+- If you want to make your concurrent tasks faster, you can set `quickMode=true` like this `var tasks = NewGoTask(10000, true)`
 
 - For some cases, if your params is concrete, I recommend that you use specific gorutine instead of use gotask because this can avoid multiple type convertion. But if your tasks is different(like three tasks,taskA,taskB and taskC) so that you can use gotask because it make your code more elegant and easy-maintained. The demos in `gotask_test.go` is sample and all tasks is the same, so that you can use original gorutine instead of `gotask`.
 
