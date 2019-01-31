@@ -2,6 +2,8 @@
 
 Gotask is a concurrent task scheduling tool based on waitegroup. Concurrent task solution for concurrent execution of computation and consistency of result data
 
+![](https://travis-ci.com/Anderson-Lu/gotask.svg?branch=master)
+
 ### Dependency
 
 ```shell
